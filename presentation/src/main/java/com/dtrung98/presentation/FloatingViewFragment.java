@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ContentView;
@@ -16,6 +17,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -200,12 +202,39 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
     }
 
     /**
+     * get the window will be used to present this {@link FloatingViewFragment}
+     *
+     * @return the window
+     */
+    public Window getWindow() {
+        Window window = null;
+        Fragment current = this;
+        Fragment parent;
+        do {
+            parent = current.getParentFragment();
+            if (parent instanceof DialogFragment) {
+                // current fragment is a child fragment of a DialogFragment
+                // inside a dialog window
+                window = ((DialogFragment) parent).requireDialog().getWindow();
+            } else if (parent == null) {
+                // current fragment is a child fragment of an activity
+                // inside a activity window
+                window = requireActivity().getWindow();
+            } else { /* normal fragment */
+                current = parent;
+            }
+        } while (window == null);
+
+        return window;
+    }
+
+    /**
      * Override this method to use other system-created-view as root view, like DecorView
      *
      * @return the new app root view
      */
     public ViewGroup getAppRootView() {
-        return requireActivity().getWindow().getDecorView().findViewById(android.R.id.content);
+        return (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     @Override
