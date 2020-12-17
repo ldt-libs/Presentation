@@ -2,39 +2,50 @@ package com.dtrung98.presentation.fullscreen;
 
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import com.dtrung98.presentation.Attribute;
+import com.dtrung98.presentation.R;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class FullscreenStyleAttribute extends Attribute {
-    public int getEnterAnimation() {
-        return mEnterAnimation;
+    public static final int ANIMATION_NONE = -1;
+    public static final int ANIMATION_SLIDE_VERTICAL = 0;
+    public static final int ANIMATION_SLIDE_HORIZONTAL = 1;
+    public static final int ANIMATION_FADE = 2;
+    public static final String FULLSCREEN_STYLE_ANIMATION = "FullscreenStyle:animation";
+
+    @Animation
+    public int getAnimation() {
+        return mAnimation;
     }
 
-    public void setEnterAnimation(int enterAnimation) {
-        mEnterAnimation = enterAnimation;
+    public void setAnimation(@Animation int mAnimation) {
+        this.mAnimation = mAnimation;
     }
 
-    public int getExitAnimation() {
-        return mExitAnimation;
+    @IntDef(value = {ANIMATION_NONE, ANIMATION_SLIDE_VERTICAL, ANIMATION_SLIDE_HORIZONTAL, ANIMATION_FADE},
+            flag = false)
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface Animation {
     }
 
-    public void setExitAnimation(int exitAnimation) {
-        mExitAnimation = exitAnimation;
-    }
-
-    private int mEnterAnimation = android.R.animator.fade_in;
-    private int mExitAnimation = android.R.animator.fade_out;
+    private @Animation
+    int mAnimation = ANIMATION_SLIDE_VERTICAL;
 
     @NonNull
     @Override
     public Bundle onSaveInstanceState() {
         Bundle bundle = super.onSaveInstanceState();
+        bundle.putInt(FULLSCREEN_STYLE_ANIMATION, mAnimation);
         return bundle;
     }
 
     @Override
     public void onRestoreInstanceState(@NonNull Bundle bundle) {
-
+        mAnimation = bundle.getInt(FULLSCREEN_STYLE_ANIMATION, mAnimation);
     }
 }

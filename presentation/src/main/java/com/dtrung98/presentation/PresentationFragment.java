@@ -3,6 +3,8 @@ package com.dtrung98.presentation;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
+import androidx.annotation.ContentView;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -78,16 +80,22 @@ public class PresentationFragment extends FloatingViewFragment {
         int wQualifier = configuration.screenWidthDp;
         int hQualifier = configuration.screenHeightDp;
 
-        return "drawer";
-
-     /*   if (wQualifier >= 448 && hQualifier >= 448) {
-            return "dialog";
+        if (wQualifier >= 448 && hQualifier >= 448) {
+            /* tablet */
+            return "drawer";//"dialog";
         } else if (hQualifier >= 300 && (float) hQualifier / wQualifier >= 4f / 3) {
-            return "bottomsheet";
+            /* mobile-portrait */
+            return "drawer";//"bottomsheet";
         } else {
+            /* mobile-landscape, mobile small screen */
+            /* fullscreen */
             return "fullscreen";
-        }*/
+        }
     }
+
+    private boolean mAdaptivePresentation = true;
+    @NonNull
+    private String mPreferredPresentationStyle = "fullscreen";
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -98,6 +106,15 @@ public class PresentationFragment extends FloatingViewFragment {
         for (PresentationStyle style : styleMap.values()) {
             style.onSavePresentationState(outState);
         }
+    }
+
+    public PresentationFragment() {
+        super();
+    }
+
+    @ContentView
+    public PresentationFragment(@LayoutRes int contentLayoutId) {
+        super(contentLayoutId);
     }
 
     @Override
@@ -115,20 +132,43 @@ public class PresentationFragment extends FloatingViewFragment {
         }
 
         // get the current presentation style
-        final String presentationStyle = retrievePresentationStyle();
+        final String presentationStyle;
+        final String style = retrievePresentationStyle();
+
+        if(style == null || !isAdaptivePresentation()) {
+            presentationStyle = getPreferredPresentationStyle();
+        } else {
+            presentationStyle = style;
+        }
+
         setCurrentPresentationStyle(presentationStyle);
 
         final ContentViewContainer container;
 
-        if (!"".equals(presentationStyle)) {
-            container = getPresentationStyleProvider().get(presentationStyle);
-            if (container == null) {
-                throw new IllegalArgumentException("The container with name :" + presentationStyle + " isn't existed in Container Provider");
-            }
-        } else {
-            // fall back to default container
-            container = super.onCreateContainer(savedInstanceState);
+        container = getPresentationStyleProvider().get(presentationStyle);
+
+        if (container == null) {
+            throw new IllegalArgumentException("The container with name [" + presentationStyle + "] isn't existed in Provider. Custom presentation style need to be added to provider to use");
         }
+
         return container;
+    }
+
+    public boolean isAdaptivePresentation() {
+        return mAdaptivePresentation;
+    }
+
+    public void setAdaptivePresentation(boolean adaptive) {
+        this.mAdaptivePresentation = adaptive;
+    }
+
+    @NonNull
+    public String getPreferredPresentationStyle() {
+        return mPreferredPresentationStyle;
+    }
+
+    @NonNull
+    public void setPreferredPresentationStyle(@NonNull String style) {
+        mPreferredPresentationStyle = style;
     }
 }

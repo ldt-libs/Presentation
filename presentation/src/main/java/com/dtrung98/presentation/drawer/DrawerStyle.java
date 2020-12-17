@@ -21,7 +21,6 @@ import com.dtrung98.presentation.Attribute;
 import com.dtrung98.presentation.PresentationStyle;
 
 public class DrawerStyle extends PresentationStyle {
-    private int mContainerWrapperId = View.generateViewId();
     private final static int DURATION = 475;
     private final static int DIM_AMOUNT = 85;
     private TimeInterpolator mTimeInterpolator = new FastOutSlowInInterpolator();
@@ -29,6 +28,9 @@ public class DrawerStyle extends PresentationStyle {
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private float mCardHeight = 0;
     private ViewGroup mWrapContentView;
+
+    private boolean mDismissing = false;
+
 
     @Override
     public String getName() {
@@ -74,27 +76,31 @@ public class DrawerStyle extends PresentationStyle {
         drawerLayout.addView(drawerContentView);
         drawerLayout.addView(carLayerView);
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            private boolean mOpenCompletely = false;
 
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
                 Log.d("CardStyle", "onDrawerSlide: " + slideOffset);
-                if (slideOffset <= 0 && !mOpenCompletely) {
+
+
+                if (slideOffset <= 0 && !requireAttribute().mOpenCompletely) {
                     onDrawerClosed(drawerView);
-                } else if (slideOffset >= 1 && !mOpenCompletely) {
-                    mOpenCompletely = true;
+                } else if (slideOffset >= 1 && !requireAttribute().mOpenCompletely) {
+                    requireAttribute().mOpenCompletely = true;
                 }
+                requireAttribute().mCloseCompletely = slideOffset <= 0;
+                requireAttribute().mOpenCompletely = slideOffset >= 1;
             }
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                mOpenCompletely = true;
+                requireAttribute().mOpenCompletely = true;
             }
 
             @Override
             public void onDrawerClosed(@NonNull View drawerView) {
                 mDismissing = false;
-                mOpenCompletely = false;
+                requireAttribute().mOpenCompletely = false;
+                requireAttribute().mCloseCompletely = true;
                 DrawerStyle.super.dismiss();
             }
 
@@ -114,24 +120,41 @@ public class DrawerStyle extends PresentationStyle {
     }
 
     @Override
-    public void show() {
-        super.show();
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
+    public boolean show() {
+        if (super.show()) {
+            mHandler.post(() -> {
                 View hostView = getHostView();
                 if (hostView instanceof DrawerLayout) {
                     ((DrawerLayout) hostView).openDrawer(Gravity.RIGHT);
                 }
-            }
-        });
-
+            });
+            return true;
+        }
+        return false;
     }
 
-    private boolean mDismissing = false;
+  /*  @Override
+    public void hide() {
+        super.hide();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                View hostView = getHostView();
+                if (hostView instanceof DrawerLayout) {
+                    ((DrawerLayout) hostView).closeDrawer(Gravity.RIGHT);
+                }
+            }
+        });
+    }*/
+
+
 
     @Override
     public void dismiss() {
+        if (requireAttribute().mCloseCompletely) {
+            super.dismiss();
+            return;
+        }
         if (mDismissing) {
             return;
         }

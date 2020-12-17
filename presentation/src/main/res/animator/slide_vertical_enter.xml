@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:propertyName="YFraction"
+    android:valueType="floatType"
+    android:valueFrom="1"
+    android:valueTo="0"
+    android:duration="650"
+    android:interpolator="@anim/fragment_fast_out_extra_slow_in"
+    />

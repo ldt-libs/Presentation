@@ -21,7 +21,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 /**
- * Show a fragment floating over the screen.
+ * Show a fragment that floats over the screen.
  * <br/>This class is expected to replace the existing Dialog Fragment.
  * <br/>It works as same as DialogFragment, but instead of creating a dialog to wrap the layout,
  * Floating View Fragment attaches/adds its layout to android.R.id.content root view so
@@ -47,7 +47,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
     private int mBackStackId = -1;
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private Runnable mDismissRunnable = new Runnable() {
+    private final Runnable mDismissRunnable = new Runnable() {
         @SuppressLint("SyntheticAccessor")
         @Override
         public void run() {
@@ -55,7 +55,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
         }
     };
 
-    private DialogInterface.OnCancelListener mOnCancelListener =
+    private final DialogInterface.OnCancelListener mOnCancelListener =
             new DialogInterface.OnCancelListener() {
                 @SuppressLint("SyntheticAccessor")
                 @Override
@@ -66,7 +66,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
                 }
             };
 
-    private DialogInterface.OnDismissListener mOnDismissListener =
+    private final DialogInterface.OnDismissListener mOnDismissListener =
             new DialogInterface.OnDismissListener() {
                 @SuppressLint("SyntheticAccessor")
                 @Override

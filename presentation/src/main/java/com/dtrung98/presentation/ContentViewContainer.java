@@ -74,7 +74,7 @@ public class ContentViewContainer implements DialogInterface {
 
     public void removeHostView() {
         mAppRootView.removeView(mHostView);
-        android.util.Log.d("ContentViewContainer","removeHostView");
+        android.util.Log.d("ContentViewContainer", "removeHostView");
     }
 
     /**
@@ -83,7 +83,7 @@ public class ContentViewContainer implements DialogInterface {
      * @param view
      */
     public void setContentView(View view) {
-        if(mHostView != null) {
+        if (mHostView != null) {
             mHostView.addView(view);
         }
     }
@@ -192,10 +192,12 @@ public class ContentViewContainer implements DialogInterface {
         }
     }
 
-    public void show() {
+    public boolean show() {
         if (mShowing) {
-            mHostView.setVisibility(View.VISIBLE);
-            return;
+            if (mHostView != null) {
+                mHostView.setVisibility(View.VISIBLE);
+            }
+            return false;
         }
 
         mCanceled = false;
@@ -208,6 +210,7 @@ public class ContentViewContainer implements DialogInterface {
         mAppRootView.addView(mHostView);
         mShowing = true;
         sendShowMessage();
+        return true;
     }
 
     private void sendShowMessage() {
@@ -216,7 +219,7 @@ public class ContentViewContainer implements DialogInterface {
         }
     }
 
-    void dispatchOnCreate(Bundle savedInstanceState) {
+    void dispatchOnCreate(@Nullable Bundle savedInstanceState) {
         if (!mCreated) {
             onCreate(savedInstanceState);
             mCreated = true;
@@ -227,7 +230,7 @@ public class ContentViewContainer implements DialogInterface {
      * Hide the container but do not dismiss it
      */
     public void hide() {
-        if(mHostView != null) {
+        if (mHostView != null) {
             mHostView.setVisibility(View.GONE);
         }
     }
@@ -257,7 +260,7 @@ public class ContentViewContainer implements DialogInterface {
 
     void dismissContainer() {
         if (!mShowing) {
-            android.util.Log.d("ContentViewContainer","dismissContainer but mShowing = true");
+            android.util.Log.d("ContentViewContainer", "dismissContainer but mShowing = true");
             return;
         }
         try {
