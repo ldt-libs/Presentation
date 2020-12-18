@@ -207,7 +207,9 @@ public class ContentViewContainer implements DialogInterface {
         }
 
         onStart();
-        mAppRootView.addView(mHostView);
+        if(mHostView != null) {
+            mAppRootView.addView(mHostView);
+        }
         mShowing = true;
         sendShowMessage();
         return true;
