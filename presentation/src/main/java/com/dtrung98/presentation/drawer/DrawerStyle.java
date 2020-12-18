@@ -83,12 +83,12 @@ public class DrawerStyle extends PresentationStyle {
 
 
                 if (slideOffset <= 0 && !requireAttribute().mOpenCompletely) {
+                    /* manual call closed method for first time user dismisses the drawer but it's open completely */
                     onDrawerClosed(drawerView);
                 } else if (slideOffset >= 1 && !requireAttribute().mOpenCompletely) {
                     requireAttribute().mOpenCompletely = true;
                 }
                 requireAttribute().mCloseCompletely = slideOffset <= 0;
-                requireAttribute().mOpenCompletely = slideOffset >= 1;
             }
 
             @Override
@@ -108,11 +108,6 @@ public class DrawerStyle extends PresentationStyle {
             public void onDrawerStateChanged(int newState) {
 
             }
-        });
-        drawerContentView.setOnTouchListener((v, event) -> {
-            Log.d("DrawerStyle", "touchOutside");
-            DrawerStyle.this.cancel();
-            return false;
         });
 
         mWrapContentView = carLayerView;
@@ -146,7 +141,6 @@ public class DrawerStyle extends PresentationStyle {
             }
         });
     }*/
-
 
 
     @Override

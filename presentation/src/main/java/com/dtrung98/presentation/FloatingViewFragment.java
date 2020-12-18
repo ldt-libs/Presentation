@@ -1,6 +1,7 @@
 package com.dtrung98.presentation;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -202,7 +203,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
     }
 
     /**
-     * get the window will be used to present this {@link FloatingViewFragment}
+     * Get the {@link Window} will be used to hold the view of this {@link FloatingViewFragment}
      *
      * @return the window
      */
@@ -229,9 +230,14 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
     }
 
     /**
-     * Override this method to use other system-created-view as root view, like DecorView
+     * Retrieve the top-level view that uses to show this fragment.
+     * <p>The fragment's {@link ContentViewContainer} (as similar as a Dialog in DialogFragment) then will be added to this AppRootView.</p>
+     * <p>Override this method to use other system-created view as root view, like decorView, which returned by {@link Window#getDecorView()}.
+     *  You might need to use decorView as app root view to bypass the system window insets</p>
+     * <p>Using app-created view as app root view is available also (by returning {@link FloatingViewFragment#getWindow()}.getDecorView().findViewById(R.id.customAppRootView)
+     * but MAKE SURE that view's lifecycle scope is larger than this fragment (The new AppRootView must be available in every time when this fragment is still alive.</p>
      *
-     * @return the new app root view
+     * @return The new app root view, default is the content view (android.R.id.content View)
      */
     public ViewGroup getAppRootView() {
         return (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
@@ -268,6 +274,10 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
                 mContentViewContainer.setContentView(view);
             }
 
+            final Activity activity = getActivity();
+            if (activity != null) {
+                mContentViewContainer.setOwnerActivity(activity);
+            }
             mContentViewContainer.setCancelable(mCancelable);
             mContentViewContainer.setOnCancelListener(mOnCancelListener);
             mContentViewContainer.setOnDismissListener(mOnDismissListener);

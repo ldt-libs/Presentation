@@ -1,5 +1,6 @@
 package com.dtrung98.presentation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ public class ContentViewContainer implements DialogInterface {
     private static final int CANCEL = 0x44;
     private static final int SHOW = 0x45;
 
+    private Activity mOwnerActivity;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Runnable mDismissAction = this::dismissContainer;
     private final Handler mListenersHandler;
@@ -59,6 +61,14 @@ public class ContentViewContainer implements DialogInterface {
         mHostView = onCreateHostView(getAppRootView().getContext());
     }
 
+    public void setOwnerActivity(Activity activity) {
+        mOwnerActivity = activity;
+    }
+
+    public Activity getOwnerActivity() {
+        return mOwnerActivity;
+    }
+
     /**
      * Create the host view
      * You can create a compound view then just return the child view which is used to hold the content view
@@ -73,7 +83,9 @@ public class ContentViewContainer implements DialogInterface {
     }
 
     public void removeHostView() {
-        mAppRootView.removeView(mHostView);
+        if (mHostView != null && mHostView.getParent() != null) {
+            mAppRootView.removeView(mHostView);
+        }
         android.util.Log.d("ContentViewContainer", "removeHostView");
     }
 
@@ -207,7 +219,7 @@ public class ContentViewContainer implements DialogInterface {
         }
 
         onStart();
-        if(mHostView != null) {
+        if (mHostView != null) {
             mAppRootView.addView(mHostView);
         }
         mShowing = true;
@@ -262,12 +274,13 @@ public class ContentViewContainer implements DialogInterface {
 
     void dismissContainer() {
         if (!mShowing) {
-            android.util.Log.d("ContentViewContainer", "dismissContainer but mShowing = true");
+            android.util.Log.d("ContentViewContainer", "dismissContainer but it's showing");
             return;
         }
         try {
             removeHostView();
-        } finally {
+        } /*catch (Exception ignored) {
+        }*/ finally {
             onStop();
             mShowing = false;
             sendDismissMessage();
