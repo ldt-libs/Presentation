@@ -20,9 +20,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             ArtistPresentationFragment().apply {
                 drawerStyleAttribute.leftOverMarginDp = 64
                 //isAdaptivePresentation = false
-               // preferredPresentationStyle = "fullscreen"
+                //preferredPresentationStyle = "fullscreen"
 
-                fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_HORIZONTAL
+                fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_VERTICAL
             }.show(supportFragmentManager, "artist-fragment")
         }
     }

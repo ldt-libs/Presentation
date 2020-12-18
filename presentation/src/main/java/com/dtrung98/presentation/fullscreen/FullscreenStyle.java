@@ -12,7 +12,7 @@ import androidx.core.graphics.PathParser;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import com.dtrung98.presentation.Attribute;
+import com.dtrung98.presentation.PresentationAttribute;
 import com.dtrung98.presentation.PresentationStyle;
 
 /**
@@ -125,7 +125,7 @@ public class FullscreenStyle extends PresentationStyle {
     }
 
     public final FullscreenStyleAttribute requireAttribute() {
-        Attribute attribute = getAttribute();
+        PresentationAttribute attribute = getAttribute();
         if (!(attribute instanceof FullscreenStyleAttribute)) {
             throw new IllegalStateException("The attribute used in this style is not a DrawerStyleAttribute");
         }

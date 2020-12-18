@@ -5,13 +5,15 @@ import android.os.Bundle;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import com.dtrung98.presentation.Attribute;
-import com.dtrung98.presentation.R;
+import com.dtrung98.presentation.PresentationAttribute;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-public class FullscreenStyleAttribute extends Attribute {
+/**
+ * The attribute used to configure {@link FullscreenStyle}
+ */
+public class FullscreenStyleAttribute extends PresentationAttribute {
     public static final int ANIMATION_NONE = -1;
     public static final int ANIMATION_SLIDE_VERTICAL = 0;
     public static final int ANIMATION_SLIDE_HORIZONTAL = 1;

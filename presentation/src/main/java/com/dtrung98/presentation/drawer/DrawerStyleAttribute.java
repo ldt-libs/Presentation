@@ -4,12 +4,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-import com.dtrung98.presentation.Attribute;
+import com.dtrung98.presentation.PresentationAttribute;
 
 /**
- * The {@link Attribute} uses to configure a {@link DrawerStyle}
+ * The {@link PresentationAttribute} uses to configure a {@link DrawerStyle}
  */
-public class DrawerStyleAttribute extends Attribute {
+public class DrawerStyleAttribute extends PresentationAttribute {
     public static final String LEFT_OVER_MARGIN_DP = "left-over-margin-dp";
     public static final String OPEN_COMPLETELY = "open-completely";
     public static final String CLOSE_COMPLETELY = "close_completely";

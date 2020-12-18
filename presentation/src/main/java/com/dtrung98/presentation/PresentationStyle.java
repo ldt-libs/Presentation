@@ -17,24 +17,24 @@ public abstract class PresentationStyle extends ContentViewContainer {
     public static final String PRESENTATION_STYLE_ATTRIBUTE = "PresentationStyle:Attribute:";
 
     public PresentationStyle(@NonNull ViewGroup appRootView) {
-        this(appRootView, new Attribute());
+        this(appRootView, new PresentationAttribute());
     }
 
     @NonNull
-    public Attribute getAttribute() {
+    public PresentationAttribute getAttribute() {
         return mAttribute;
     }
 
     @NonNull
-    private final Attribute mAttribute;
+    private final PresentationAttribute mAttribute;
 
-    public PresentationStyle(@NonNull ViewGroup appRootView, @Nullable Attribute attribute) {
+    public PresentationStyle(@NonNull ViewGroup appRootView, @Nullable PresentationAttribute attribute) {
         super(appRootView);
 
         if (attribute != null) {
             mAttribute = attribute;
         } else {
-            mAttribute = new Attribute();
+            mAttribute = new PresentationAttribute();
         }
     }
 

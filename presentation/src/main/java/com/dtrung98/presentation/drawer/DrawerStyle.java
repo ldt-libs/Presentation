@@ -17,7 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
-import com.dtrung98.presentation.Attribute;
+import com.dtrung98.presentation.PresentationAttribute;
 import com.dtrung98.presentation.PresentationStyle;
 
 public class DrawerStyle extends PresentationStyle {
@@ -43,7 +43,7 @@ public class DrawerStyle extends PresentationStyle {
     }
 
     public final DrawerStyleAttribute requireAttribute() {
-        Attribute attribute = getAttribute();
+        PresentationAttribute attribute = getAttribute();
         if (!(attribute instanceof DrawerStyleAttribute)) {
             throw new IllegalStateException("The attribute used in this style (" + attribute + ") is not a DrawerStyleAttribute");
         }
