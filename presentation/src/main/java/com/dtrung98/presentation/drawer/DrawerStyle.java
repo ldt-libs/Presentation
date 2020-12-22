@@ -16,8 +16,11 @@ import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 
 import com.dtrung98.presentation.PresentationAttribute;
+import com.dtrung98.presentation.PresentationLayerEntry;
 import com.dtrung98.presentation.PresentationStyle;
 
 public class DrawerStyle extends PresentationStyle {
@@ -59,10 +62,10 @@ public class DrawerStyle extends PresentationStyle {
         topInset += 14f * mDensity;
 
         mCardHeight = parentHeight - topInset;
-        FrameLayout carLayerView = new FrameLayout(context);
+        FrameLayout layerView = new FrameLayout(context);
         DrawerLayout.LayoutParams params = new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.RIGHT;
-        carLayerView.setLayoutParams(params);
+        layerView.setLayoutParams(params);
 
         View drawerContentView = new View(context);
         DrawerLayout.LayoutParams dcvParams = new DrawerLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -74,13 +77,13 @@ public class DrawerStyle extends PresentationStyle {
         FrameLayout.LayoutParams dlParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         drawerLayout.setLayoutParams(dlParams);
         drawerLayout.addView(drawerContentView);
-        drawerLayout.addView(carLayerView);
+        drawerLayout.addView(layerView);
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
 
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
                 Log.d("CardStyle", "onDrawerSlide: " + slideOffset);
-
+                findPresentationLayersController().updateForegroundLayerFraction(slideOffset);
 
                 if (slideOffset <= 0 && !requireAttribute().mOpenCompletely) {
                     /* manual call closed method for first time user dismisses the drawer but it's open completely */
@@ -110,8 +113,22 @@ public class DrawerStyle extends PresentationStyle {
             }
         });
 
-        mWrapContentView = carLayerView;
+        mWrapContentView = layerView;
         return drawerLayout;
+    }
+
+    @Override
+    protected void initContainer() {
+        super.initContainer();
+        PresentationLayerEntry entry = findPresentationLayersController().getCurrentPresentationLayerEntry();
+        entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
+
+        entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
+            View host = getHostView();
+            if (host != null) {
+                host.setTranslationX(-host.getWidth() / 3f * fraction);
+            }
+        });
     }
 
     @Override

@@ -30,7 +30,7 @@ import androidx.fragment.app.FragmentTransaction;
  * Floating View Fragment attaches/adds its layout to android.R.id.content root view so
  * no need dialog anymore.
  * <br/>Dismiss the owner fragment will dismiss its child FloatingViewFragment automatically.
- * <br/> Back pressed event is handled automatically by default, but you have an option to disable it
+ * <br/> Back pressed event is handled automatically by default, but you have an option to disable it.
  */
 public class FloatingViewFragment extends Fragment implements DialogInterface.OnCancelListener, DialogInterface.OnDismissListener {
 
@@ -358,7 +358,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
         try {
             mCreatingDialog = true;
             mContentViewContainer = onCreateContainer(savedInstanceState);
-            mContentViewContainer.initialize();
+            mContentViewContainer.initContainer();
             onContainerCreated(mContentViewContainer, savedInstanceState);
         } finally {
             mCreatingDialog = false;

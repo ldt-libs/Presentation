@@ -16,7 +16,14 @@ import com.dtrung98.presentation.fullscreen.FullscreenStyleAttribute;
 import java.util.HashMap;
 
 /**
- * A {@link FloatingViewFragment} which can be shown in multiple style based on the current configuration.
+ * Show a fragment that floats over the screen.
+ * <br/>This class is expected to replace the existing Dialog Fragment.
+ * <br/>It works as same as DialogFragment, but instead of creating a dialog to wrap the layout,
+ * PresentationFragment(FloatingViewFragment) adds its layout to android.R.id.content root view so
+ * no need dialog anymore.
+ * <br/>Dismiss the owner fragment will dismiss its child PresentationFragment (FloatingViewFragment) automatically.
+ * <br/> Back pressed events are handled automatically by default, but you have an option to disable it.
+ * A {@link PresentationFragment} can be shown in multiple style based on the current configuration.
  */
 public class PresentationFragment extends FloatingViewFragment {
     private final FullscreenStyleAttribute mFullscreenStyleAttribute = new FullscreenStyleAttribute();

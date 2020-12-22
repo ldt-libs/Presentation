@@ -1,6 +1,8 @@
 package com.dtrung98.presentation.fullscreen;
 
 import android.animation.Animator;
+import android.animation.ValueAnimator;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
@@ -11,8 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.PathParser;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.dtrung98.presentation.PresentationAttribute;
+import com.dtrung98.presentation.PresentationLayerEntry;
 import com.dtrung98.presentation.PresentationStyle;
 
 /**
@@ -56,7 +60,9 @@ public class FullscreenStyle extends PresentationStyle {
                 hostView.animate().translationY(0).setInterpolator(new FastOutSlowInInterpolator()).setDuration(450);
                 break;
         }
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction((Float) animation.getAnimatedValue()));
+        }
         animator.start();
     }
 
@@ -67,6 +73,20 @@ public class FullscreenStyle extends PresentationStyle {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void initContainer() {
+        super.initContainer();
+        PresentationLayerEntry entry = findPresentationLayersController().getCurrentPresentationLayerEntry();
+        entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
+
+        entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
+            View host = getHostView();
+            if (host != null) {
+                host.setTranslationX(-host.getWidth() / 1f * fraction);
+            }
+        });
     }
 
     private Interpolator fastOutExtraSlowIn() {
@@ -108,6 +128,9 @@ public class FullscreenStyle extends PresentationStyle {
             default:
                 hostView.animate().translationY(height).setInterpolator(new FastOutSlowInInterpolator()).setDuration(350);
                 break;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction(1- animation.getAnimatedFraction()));
         }
         animator.setListener(new SimpleAnimatorListener() {
             @Override

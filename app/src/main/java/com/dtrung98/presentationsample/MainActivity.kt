@@ -18,11 +18,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         findViewById<View>(R.id.presentButton)?.setOnClickListener {
             ArtistPresentationFragment().apply {
-                drawerStyleAttribute.leftOverMarginDp = 64
-                //isAdaptivePresentation = false
-                //preferredPresentationStyle = "fullscreen"
+                drawerStyleAttribute.leftOverMarginDp = 0
+                isAdaptivePresentation = false
+                preferredPresentationStyle = "drawer"
 
-                fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_VERTICAL
+                //fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_VERTICAL
             }.show(supportFragmentManager, "artist-fragment")
         }
     }

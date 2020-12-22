@@ -16,6 +16,24 @@ public abstract class PresentationStyle extends ContentViewContainer {
 
     public static final String PRESENTATION_STYLE_ATTRIBUTE = "PresentationStyle:Attribute:";
 
+    public int getId() {
+        return mId;
+    }
+
+    private final int mId = View.generateViewId();
+
+    @NonNull
+    public PresentationStylesController findPresentationLayersController() {
+        return PresentationStylesController.of(getAppRootView());
+    }
+
+    @Override
+    protected void initContainer() {
+        super.initContainer();
+        PresentationStylesController controller = findPresentationLayersController();
+        controller.addPresentationLayer(this);
+    }
+
     public PresentationStyle(@NonNull ViewGroup appRootView) {
         this(appRootView, new PresentationAttribute());
     }
@@ -40,8 +58,6 @@ public abstract class PresentationStyle extends ContentViewContainer {
 
     /**
      * Unique name used to identify the {@link PresentationStyle}
-     *
-     * @return
      */
     @NonNull
     public abstract String getName();
@@ -49,6 +65,12 @@ public abstract class PresentationStyle extends ContentViewContainer {
     @Override
     public ViewGroup onCreateHostView(Context context) {
         return super.onCreateHostView(context);
+    }
+
+    @Override
+    void dismissContainer() {
+        super.dismissContainer();
+        findPresentationLayersController().removePresentationLayer(getId());
     }
 
     @Override

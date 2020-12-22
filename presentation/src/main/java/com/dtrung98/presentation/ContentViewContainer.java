@@ -57,7 +57,7 @@ public class ContentViewContainer implements DialogInterface {
         mListenersHandler = new ListenersHandler(Looper.getMainLooper(), this);
     }
 
-    protected void initialize() {
+    protected void initContainer() {
         mHostView = onCreateHostView(getAppRootView().getContext());
     }
 
@@ -303,10 +303,6 @@ public class ContentViewContainer implements DialogInterface {
     }
 
     protected void onCreate(Bundle savedInstanceState) {
-
-    }
-
-    public void onDestroy() {
 
     }
 
