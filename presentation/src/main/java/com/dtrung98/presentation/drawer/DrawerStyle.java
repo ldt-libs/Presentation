@@ -36,7 +36,7 @@ public class DrawerStyle extends PresentationStyle {
 
 
     @Override
-    public String getName() {
+    public String getPresentationType() {
         return "drawer";
     }
 
@@ -120,7 +120,7 @@ public class DrawerStyle extends PresentationStyle {
     @Override
     protected void initContainer() {
         super.initContainer();
-        PresentationLayerEntry entry = findPresentationLayersController().getCurrentPresentationLayerEntry();
+        PresentationLayerEntry entry = findPresentationLayersController().getPresentationEntry(getId());
         entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
 
         entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {

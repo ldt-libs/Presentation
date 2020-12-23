@@ -1,7 +1,6 @@
 package com.dtrung98.presentation;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,6 @@ import androidx.annotation.Nullable;
 public abstract class PresentationStyle extends ContentViewContainer {
 
     public static final String PRESENTATION_STYLE_ATTRIBUTE = "PresentationStyle:Attribute:";
-
-    public int getId() {
-        return mId;
-    }
-
-    private final int mId = View.generateViewId();
 
     @NonNull
     public PresentationStylesController findPresentationLayersController() {
@@ -60,12 +53,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * Unique name used to identify the {@link PresentationStyle}
      */
     @NonNull
-    public abstract String getName();
-
-    @Override
-    public ViewGroup onCreateHostView(Context context) {
-        return super.onCreateHostView(context);
-    }
+    public abstract String getPresentationType();
 
     @Override
     void dismissContainer() {
@@ -82,7 +70,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * @param bundle bundle
      */
     public void onSavePresentationState(@NonNull Bundle bundle) {
-        bundle.putBundle(PRESENTATION_STYLE_ATTRIBUTE + getName(), mAttribute.onSaveInstanceState());
+        bundle.putBundle(PRESENTATION_STYLE_ATTRIBUTE + getPresentationType(), mAttribute.onSaveInstanceState());
     }
 
     /**
@@ -91,7 +79,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * @param bundle bundle
      */
     public void onRestorePresentationState(@NonNull Bundle bundle) {
-        Bundle attributeBundle = bundle.getBundle(PRESENTATION_STYLE_ATTRIBUTE + getName());
+        Bundle attributeBundle = bundle.getBundle(PRESENTATION_STYLE_ATTRIBUTE + getPresentationType());
         if (attributeBundle != null) {
             mAttribute.onRestoreInstanceState(attributeBundle);
         }

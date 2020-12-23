@@ -26,11 +26,20 @@ public class PresentationStylesController {
     @NonNull
     private final ViewGroup mAppRootView;
     private ArrayDeque<PresentationLayerEntry> mEntries = new ArrayDeque<>();
+    private int mPrimaryPresentationStyleId = 0;
 
     @NonNull
     public PresentationLayerEntry addPresentationLayer(PresentationStyle presentationStyle) {
         PresentationLayerEntry entry = new PresentationLayerEntry(presentationStyle.getId());
-        mEntries.add(entry);
+
+        if(mPrimaryPresentationStyleId == 0 && presentationStyle instanceof PrimaryPresentationFragment.PrimaryPresentationStyle) {
+            // if the presentationStyle is the primary
+            // put it to last
+            mPrimaryPresentationStyleId = presentationStyle.getId();
+            mEntries.addFirst(entry);
+        } else {
+            mEntries.add(entry);
+        }
         return entry;
     }
 
@@ -39,6 +48,9 @@ public class PresentationStylesController {
         PresentationLayerEntry entry = getPresentationEntry(id);
         if (entry != null) {
             mEntries.remove(entry);
+        }
+        if(id == mPrimaryPresentationStyleId) {
+            mPrimaryPresentationStyleId = 0;
         }
     }
 

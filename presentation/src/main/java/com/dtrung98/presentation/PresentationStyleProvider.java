@@ -39,7 +39,7 @@ public class PresentationStyleProvider {
     }
 
     public PresentationStyle addStyle(PresentationStyle style) {
-        String name = style.getName();
+        String name = style.getPresentationType();
         return addStyle(name, style);
     }
 }

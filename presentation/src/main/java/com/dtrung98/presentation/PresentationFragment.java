@@ -1,5 +1,6 @@
 package com.dtrung98.presentation;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -37,6 +38,19 @@ public class PresentationFragment extends FloatingViewFragment {
         return mDrawerStyleAttribute;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        Object primaryContainerExists = getAppRootView().getTag(R.id.content_view_container_id_primary);
+        if (!(this instanceof PrimaryPresentationFragment) && (primaryContainerExists == null || ((primaryContainerExists instanceof Boolean) && !((Boolean) primaryContainerExists)))) {
+            new PrimaryPresentationFragment().show(getChildFragmentManager(), "primary-presentation-fragment");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
 
     public final PresentationStyleProvider getPresentationStyleProvider() {
         if (mPresentationStyleProvider == null) {
@@ -142,7 +156,7 @@ public class PresentationFragment extends FloatingViewFragment {
         final String presentationStyle;
         final String style = retrievePresentationStyle();
 
-        if(style == null || !isAdaptivePresentation()) {
+        if (style == null || !isAdaptivePresentation()) {
             presentationStyle = getPreferredPresentationStyle();
         } else {
             presentationStyle = style;

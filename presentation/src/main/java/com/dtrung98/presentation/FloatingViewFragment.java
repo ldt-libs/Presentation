@@ -38,6 +38,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
     private static final String SAVED_CANCELABLE = "android:cancelable";
     private static final String SAVED_SHOWS_DIALOG = "android:showsDialog";
     private static final String SAVED_BACK_STACK_ID = "android:backStackId";
+    public static final String ON_BACK_PRESSED_CALLBACK_ENABLED = "on-back-pressed-callback-enabled";
 
     private boolean mShowsDialog = true;
 
@@ -233,7 +234,7 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
      * Retrieve the top-level view that uses to show this fragment.
      * <p>The fragment's {@link ContentViewContainer} (as similar as a Dialog in DialogFragment) then will be added to this AppRootView.</p>
      * <p>Override this method to use other system-created view as root view, like decorView, which returned by {@link Window#getDecorView()}.
-     *  You might need to use decorView as app root view to bypass the system window insets</p>
+     * You might need to use decorView as app root view to bypass the system window insets</p>
      * <p>Using app-created view as app root view is available also (by returning {@link FloatingViewFragment#getWindow()}.getDecorView().findViewById(R.id.customAppRootView)
      * but MAKE SURE that view's lifecycle scope is larger than this fragment (The new AppRootView must be available in every time when this fragment is still alive.</p>
      *
@@ -331,20 +332,27 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
             mCancelable = savedInstanceState.getBoolean(SAVED_CANCELABLE, true);
             mShowsDialog = savedInstanceState.getBoolean(SAVED_SHOWS_DIALOG, mShowsDialog);
             mBackStackId = savedInstanceState.getInt(SAVED_BACK_STACK_ID, -1);
+            setBackPressedCallbackEnabled(savedInstanceState.getBoolean(ON_BACK_PRESSED_CALLBACK_ENABLED, isBackPressedCallbackEnabled()));
         }
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (mCancelable) {
-                    if (getParentFragmentManager().getPrimaryNavigationFragment() == FloatingViewFragment.this) {
-                        requireActivity().finish();
-                    } else {
-                        dismiss();
-                    }
-                }
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+    }
+
+    private final OnBackPressedCallback mOnBackPressedCallback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if(mContentViewContainer != null) {
+               mContentViewContainer.dismiss();
             }
-        });
+        }
+    };
+
+    public void setBackPressedCallbackEnabled(boolean value) {
+        mOnBackPressedCallback.setEnabled(value);
+    }
+
+    public boolean isBackPressedCallbackEnabled() {
+        return mOnBackPressedCallback.isEnabled();
     }
 
     @NonNull
@@ -392,6 +400,10 @@ public class FloatingViewFragment extends Fragment implements DialogInterface.On
         }
         if (mBackStackId != -1) {
             outState.putInt(SAVED_BACK_STACK_ID, mBackStackId);
+        }
+
+        if (!mOnBackPressedCallback.isEnabled()) {
+            outState.putBoolean(ON_BACK_PRESSED_CALLBACK_ENABLED, false);
         }
     }
 

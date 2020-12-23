@@ -32,6 +32,15 @@ public class ContentViewContainer implements DialogInterface {
     private boolean mCreated = false;
     private boolean mCanceled = false;
 
+    public int getId() {
+        if (mId == 0) {
+            mId = View.generateViewId();
+        }
+        return mId;
+    }
+
+    private int mId = 0;
+
     public ViewGroup getAppRootView() {
         return mAppRootView;
     }
@@ -59,6 +68,9 @@ public class ContentViewContainer implements DialogInterface {
 
     protected void initContainer() {
         mHostView = onCreateHostView(getAppRootView().getContext());
+        if (mHostView != null) {
+            mHostView.setTag(R.id.content_view_container_id, getId());
+        }
     }
 
     public void setOwnerActivity(Activity activity) {

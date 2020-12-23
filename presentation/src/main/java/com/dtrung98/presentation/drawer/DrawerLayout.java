@@ -163,7 +163,7 @@ public class DrawerLayout extends ViewGroup {
     public int MIN_DRAWER_MARGIN = 0;//64; // dp
     private static final int DRAWER_ELEVATION = 10; //dp
 
-    private static final int DEFAULT_SCRIM_COLOR = 0x99000000;
+    private static final int DEFAULT_SCRIM_COLOR = 0x40000000;
 
     /**
      * Length of time to delay before peeking the drawer.

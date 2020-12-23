@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 
 import com.dtrung98.insetsview.ext.setUpLightSystemUIVisibility
+import com.dtrung98.presentation.PrimaryPresentationFragment
 import com.dtrung98.presentation.fullscreen.FullscreenStyleAttribute
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
@@ -15,6 +16,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
+
+        //PrimaryPresentationFragment().show(supportFragmentManager, "primary-presentation-fragment")
 
         findViewById<View>(R.id.presentButton)?.setOnClickListener {
             ArtistPresentationFragment().apply {

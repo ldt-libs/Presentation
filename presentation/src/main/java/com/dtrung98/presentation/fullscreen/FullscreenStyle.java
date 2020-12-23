@@ -35,29 +35,35 @@ public class FullscreenStyle extends PresentationStyle {
         super(appRootView, attribute);
     }
 
+    protected View getTransitView() {
+        return getHostView();
+    }
+
     public void doShowAnimation() {
-        final View hostView = getHostView();
-        if (hostView == null || requireAttribute().getAnimation() == FullscreenStyleAttribute.ANIMATION_NONE) {
+        final View transitView = getHostView();
+        if (transitView == null || requireAttribute().getAnimation() == FullscreenStyleAttribute.ANIMATION_NONE) {
             return;
         }
 
         final int width = getAppRootView().getWidth();
         final int height = getAppRootView().getHeight();
 
-        final ViewPropertyAnimator animator = hostView.animate();
+        final ViewPropertyAnimator animator = transitView.animate();
         switch (requireAttribute().getAnimation()) {
+            case FullscreenStyleAttribute.ANIMATION_NONE:
+                break;
             case FullscreenStyleAttribute.ANIMATION_SLIDE_HORIZONTAL:
-                hostView.setTranslationX(width);
+                transitView.setTranslationX(width);
                 animator.translationX(0).setInterpolator(new FastOutSlowInInterpolator()).setDuration(450);
                 break;
             case FullscreenStyleAttribute.ANIMATION_FADE:
-                hostView.setAlpha(0);
+                transitView.setAlpha(0);
                 animator.alpha(1).setDuration(350);
                 break;
             case FullscreenStyleAttribute.ANIMATION_SLIDE_VERTICAL:
             default:
-                hostView.setTranslationY(height);
-                hostView.animate().translationY(0).setInterpolator(new FastOutSlowInInterpolator()).setDuration(450);
+                transitView.setTranslationY(height);
+                transitView.animate().translationY(0).setInterpolator(new FastOutSlowInInterpolator()).setDuration(450);
                 break;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -78,13 +84,13 @@ public class FullscreenStyle extends PresentationStyle {
     @Override
     protected void initContainer() {
         super.initContainer();
-        PresentationLayerEntry entry = findPresentationLayersController().getCurrentPresentationLayerEntry();
+        PresentationLayerEntry entry = findPresentationLayersController().getPresentationEntry(getId());
         entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
 
         entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
-            View host = getHostView();
-            if (host != null) {
-                host.setTranslationX(-host.getWidth() / 1f * fraction);
+            View transitView = getTransitView();
+            if (transitView != null) {
+                transitView.setTranslationX(-transitView.getWidth() / 3f * fraction);
             }
         });
     }
@@ -115,8 +121,9 @@ public class FullscreenStyle extends PresentationStyle {
 
         final int width = getAppRootView().getWidth();
         final int height = getAppRootView().getHeight();
+        final View transitView = hostView;
 
-        final ViewPropertyAnimator animator = hostView.animate();
+        final ViewPropertyAnimator animator = transitView.animate();
         switch (requireAttribute().getAnimation()) {
             case FullscreenStyleAttribute.ANIMATION_SLIDE_HORIZONTAL:
                 animator.translationX(width).setInterpolator(new FastOutSlowInInterpolator()).setDuration(450);
@@ -130,7 +137,7 @@ public class FullscreenStyle extends PresentationStyle {
                 break;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction(1- animation.getAnimatedFraction()));
+            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction(1 - animation.getAnimatedFraction()));
         }
         animator.setListener(new SimpleAnimatorListener() {
             @Override
@@ -143,7 +150,7 @@ public class FullscreenStyle extends PresentationStyle {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPresentationType() {
         return "fullscreen";
     }
 

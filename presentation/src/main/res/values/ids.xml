@@ -2,4 +2,8 @@
 <resources>
     <item name="presentation_presentationstyle" type="id" />
     <item name="presentation_presentation_layers_controller" type="id" />
+    <item name="content_view_container_host_view" type="id" />
+    <item name="content_view_container_id" type="id" />
+    <item name="content_view_container_id_primary" type="id" />
+    <item name="presentation_presentationstyle_primary" type="id" />
 </resources>
