@@ -27,6 +27,8 @@ import java.util.HashMap;
  * A {@link PresentationFragment} can be shown in multiple style based on the current configuration.
  */
 public class PresentationFragment extends FloatingViewFragment {
+    public static final String SAVED_IS_ADAPTIVE_PRESENTATION = "saved-is-adaptive-presentation";
+    public static final String SAVED_PREFERRED_PRESENTATION_STYLE = "saved-preferred-presentation-style";
     private final FullscreenStyleAttribute mFullscreenStyleAttribute = new FullscreenStyleAttribute();
     private final DrawerStyleAttribute mDrawerStyleAttribute = new DrawerStyleAttribute();
 
@@ -122,6 +124,13 @@ public class PresentationFragment extends FloatingViewFragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        // adaptive presentation configuration
+        if (!mAdaptivePresentation) {
+            outState.putBoolean(SAVED_IS_ADAPTIVE_PRESENTATION, false);
+        }
+
+        outState.putString(SAVED_PREFERRED_PRESENTATION_STYLE, mPreferredPresentationStyle);
+
         // Save all presentation states
         HashMap<String, PresentationStyle> styleMap = getPresentationStyleProvider().getHashMap();
         for (PresentationStyle style : styleMap.values()) {
@@ -145,6 +154,9 @@ public class PresentationFragment extends FloatingViewFragment {
 
         // Restore all presentation states
         if (savedInstanceState != null) {
+            mAdaptivePresentation = savedInstanceState.getBoolean(SAVED_IS_ADAPTIVE_PRESENTATION, mAdaptivePresentation);
+            mPreferredPresentationStyle = savedInstanceState.getString(SAVED_PREFERRED_PRESENTATION_STYLE, mPreferredPresentationStyle);
+
             HashMap<String, PresentationStyle> styleMap = getPresentationStyleProvider().getHashMap();
             for (PresentationStyle style :
                     styleMap.values()) {

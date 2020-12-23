@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:colorBackground">
+    android:background="@android:color/white">
     <com.dtrung98.insetsview.SafeAreaView
         android:id="@+id/safeView"
         android:layout_width="match_parent"

@@ -2,6 +2,9 @@ package com.dtrung98.presentation.fullscreen;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,9 @@ import androidx.lifecycle.LifecycleOwner;
 import com.dtrung98.presentation.PresentationAttribute;
 import com.dtrung98.presentation.PresentationLayerEntry;
 import com.dtrung98.presentation.PresentationStyle;
+import com.dtrung98.presentation.widget.RoundRectDrawable;
+
+import static android.os.Build.VERSION_CODES.R;
 
 /**
  * A style which always presents in a fullscreen frame.
@@ -81,18 +87,56 @@ public class FullscreenStyle extends PresentationStyle {
         return false;
     }
 
+    private float mDensity = 1;
+
     @Override
     protected void initContainer() {
         super.initContainer();
         PresentationLayerEntry entry = findPresentationLayersController().getPresentationEntry(getId());
         entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
 
-        entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
-            View transitView = getTransitView();
-            if (transitView != null) {
-                transitView.setTranslationX(-transitView.getWidth() / 3f * fraction);
+        getAppRootView().setBackgroundColor(Color.BLACK);
+        final View transitView = getTransitView();
+        if (transitView != null) {
+            RoundRectDrawable background;
+            mDensity = getAppRootView().getResources().getDisplayMetrics().density;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final Drawable preBackground = transitView.getBackground();
+                if (!(preBackground instanceof RoundRectDrawable)) {
+                    background = new RoundRectDrawable(ColorStateList.valueOf(Color.WHITE),
+                            0);
+                    transitView.setBackground(background);
+                } else {
+                    background = (RoundRectDrawable) preBackground;
+                }
+
+                transitView.setClipToOutline(true);
+                transitView.setElevation(0);//4 * viewBehind.getResources().getDimension(R.dimen.oneDP));
+
+                final RoundRectDrawable bg = background;
             }
+        }
+
+        entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
+            doBackgroundCardPresentationTransit(fraction);
+           /* if (transitView != null) {
+                transitView.setTranslationX(-transitView.getWidth() / 3f * fraction);
+            }*/
         });
+    }
+
+    private void doBackgroundCardPresentationTransit(float fraction) {
+        View transitView = getTransitView();
+        Drawable background = transitView != null ? transitView.getBackground() : null;
+        if (transitView != null) {
+            transitView.setScaleX(1 - 0.1f * fraction);
+            transitView.setScaleY(1 - 0.1f * fraction);
+        }
+
+        if (background instanceof RoundRectDrawable && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ((RoundRectDrawable) background).setRadius(16 * mDensity * (fraction < 0.1 ? 0 : fraction > 0.9 ? 1 : fraction));
+        }
     }
 
     private Interpolator fastOutExtraSlowIn() {

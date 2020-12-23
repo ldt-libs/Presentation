@@ -52,7 +52,7 @@ public class RoundRectDrawable extends Drawable {
     private ColorStateList mTint;
     private PorterDuff.Mode mTintMode = PorterDuff.Mode.SRC_IN;
 
-    RoundRectDrawable(ColorStateList backgroundColor, float radius) {
+    public RoundRectDrawable(ColorStateList backgroundColor, float radius) {
         mRadius = radius;
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         setBackground(backgroundColor);
