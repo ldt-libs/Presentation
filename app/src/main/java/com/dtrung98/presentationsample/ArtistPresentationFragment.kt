@@ -16,9 +16,9 @@ open class ArtistPresentationFragment : PresentationFragment(R.layout.activity_m
         super.onViewCreated(view, savedInstanceState)
         view.findViewById<View>(R.id.presentButton)?.setOnClickListener {
             ArtistPresentationFragment().apply {
-                drawerStyleAttribute.leftOverMarginDp = 0
+                drawerStyleAttribute.leftOverMarginDp = 64
                 isAdaptivePresentation = false
-                preferredPresentationStyle = "drawer"
+                preferredPresentationStyle = "slider"
 
                 //fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_HORIZONTAL
             }.show(childFragmentManager, "artist-fragment")

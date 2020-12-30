@@ -6,8 +6,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import com.dtrung98.presentation.fullscreen.FullscreenStyle;
+import com.dtrung98.presentation.fullscreen.FullscreenPresentationStyle;
 import com.dtrung98.presentation.fullscreen.FullscreenStyleAttribute;
 
 public class PrimaryPresentationFragment extends PresentationFragment {
@@ -19,23 +20,30 @@ public class PrimaryPresentationFragment extends PresentationFragment {
     }
 
     @Override
-    protected void onCreatePresentationStyleProvider() {
-        PresentationStyleProvider provider = getPresentationStyleProvider();
-        provider.addStyle(new PrimaryPresentationStyle(getAppRootView(), new FullscreenStyleAttribute()));
+    public ViewGroup getAppRootView() {
+        Fragment fragment = requireParentFragment();
+        if (!(fragment instanceof PresentationFragment)) {
+            throw new IllegalStateException("The PrimaryPresentationFragment requires its ParentFragment being a PresentationFragment");
+        }
+
+        return ((PresentationFragment) fragment).getAppRootView();
     }
 
-    static class PrimaryPresentationStyle extends FullscreenStyle {
-        private View mPrimaryHostView;
+    @Override
+    protected void onCreatePresentationStyleProvider() {
+        PresentationStyleProvider provider = getPresentationStyleProvider();
+        provider.addStyle(new PrimaryPresentationPresentationStyle(getAppRootView(), new FullscreenStyleAttribute()));
+    }
 
-       /* @Override
-        public int getId() {
-            return R.id.content_view_container_id_primary;
-        }*/
+    static final class PrimaryPresentationPresentationStyle extends FullscreenPresentationStyle {
+        private final View mPrimaryHostView;
 
-        public PrimaryPresentationStyle(@NonNull ViewGroup appRootView, @Nullable FullscreenStyleAttribute attribute) {
+        public PrimaryPresentationPresentationStyle(@NonNull ViewGroup appRootView, @Nullable FullscreenStyleAttribute attribute) {
             super(appRootView, attribute);
             final int count = appRootView.getChildCount();
             View primaryHostView = null;
+
+            // find primary host view in current app root view
             for (int i = 0; i < count; i++) {
                 View view = appRootView.getChildAt(i);
                 Object id = view.getTag(R.id.content_view_container_id);
@@ -51,24 +59,11 @@ public class PrimaryPresentationFragment extends PresentationFragment {
 
             mPrimaryHostView = primaryHostView;
 
-            appRootView.setTag(R.id.content_view_container_id_primary, true);
         }
 
         @Override
         protected View getTransitView() {
             return mPrimaryHostView;
-        }
-
-        @Override
-        public void dismissImmediately() {
-            super.dismissImmediately();
-            getAppRootView().setTag(R.id.content_view_container_id_primary, false);
-        }
-
-        @Override
-        protected void initContainer() {
-            super.initContainer();
-
         }
 
         @Override

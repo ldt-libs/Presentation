@@ -11,7 +11,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * The attribute used to configure {@link FullscreenStyle}
+ * The attribute used to configure {@link FullscreenPresentationStyle}
  */
 public class FullscreenStyleAttribute extends PresentationAttribute {
     public static final int ANIMATION_NONE = -1;

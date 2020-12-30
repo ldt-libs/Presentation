@@ -21,9 +21,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         findViewById<View>(R.id.presentButton)?.setOnClickListener {
             ArtistPresentationFragment().apply {
-                drawerStyleAttribute.leftOverMarginDp = 0
+                drawerStyleAttribute.leftOverMarginDp = 64
                 isAdaptivePresentation = false
-                preferredPresentationStyle = "drawer"
+                preferredPresentationStyle = "slider"
 
                 //fullscreenStyleAttribute.animation = FullscreenStyleAttribute.ANIMATION_SLIDE_VERTICAL
             }.show(supportFragmentManager, "artist-fragment")

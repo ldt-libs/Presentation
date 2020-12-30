@@ -9,10 +9,12 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.dtrung98.presentation.drawer.DrawerStyle;
+import com.dtrung98.presentation.drawer.DrawerPresentationStyle;
 import com.dtrung98.presentation.drawer.DrawerStyleAttribute;
-import com.dtrung98.presentation.fullscreen.FullscreenStyle;
+import com.dtrung98.presentation.fullscreen.FullscreenPresentationStyle;
 import com.dtrung98.presentation.fullscreen.FullscreenStyleAttribute;
+import com.dtrung98.presentation.slider.SliderPresentationStyle;
+import com.dtrung98.presentation.slider.SliderStyleAttribute;
 
 import java.util.HashMap;
 
@@ -29,8 +31,10 @@ import java.util.HashMap;
 public class PresentationFragment extends FloatingViewFragment {
     public static final String SAVED_IS_ADAPTIVE_PRESENTATION = "saved-is-adaptive-presentation";
     public static final String SAVED_PREFERRED_PRESENTATION_STYLE = "saved-preferred-presentation-style";
+    public static final String PRESENTATION_TAG_PRIMARY_PRESENTATION_FRAGMENT = "presentation:tag-primary-presentation-fragment";
     private final FullscreenStyleAttribute mFullscreenStyleAttribute = new FullscreenStyleAttribute();
     private final DrawerStyleAttribute mDrawerStyleAttribute = new DrawerStyleAttribute();
+    private final SliderStyleAttribute mSliderStyleAttribute = new SliderStyleAttribute();
 
     public FullscreenStyleAttribute getFullscreenStyleAttribute() {
         return mFullscreenStyleAttribute;
@@ -40,13 +44,22 @@ public class PresentationFragment extends FloatingViewFragment {
         return mDrawerStyleAttribute;
     }
 
+    /**
+     * Create the PrimaryPresentationFragment which manages index-0 view in App Root View
+     *
+     * @param context
+     */
+    protected void onCreatePrimaryPresentationFragment(@NonNull Context context) {
+        // instantiate a PrimaryPresentationFragment if needed
+        if (!PresentationStylesController.of(getAppRootView()).hasPrimaryPresentation() && !(this instanceof PrimaryPresentationFragment)) {
+            new PrimaryPresentationFragment().show(getChildFragmentManager(), PRESENTATION_TAG_PRIMARY_PRESENTATION_FRAGMENT);
+        }
+    }
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        Object primaryContainerExists = getAppRootView().getTag(R.id.content_view_container_id_primary);
-        if (!(this instanceof PrimaryPresentationFragment) && (primaryContainerExists == null || ((primaryContainerExists instanceof Boolean) && !((Boolean) primaryContainerExists)))) {
-            new PrimaryPresentationFragment().show(getChildFragmentManager(), "primary-presentation-fragment");
-        }
+        onCreatePrimaryPresentationFragment(context);
     }
 
     @Override
@@ -63,8 +76,8 @@ public class PresentationFragment extends FloatingViewFragment {
 
     private PresentationStyleProvider mPresentationStyleProvider;
 
-    public final PresentationStyle getPresentationStyle(String name) {
-        return getPresentationStyleProvider().get(name);
+    public final PresentationStyle getPresentationStyle(String styleName) {
+        return getPresentationStyleProvider().get(styleName);
     }
 
     public String getCurrentPresentationStyle() {
@@ -87,9 +100,9 @@ public class PresentationFragment extends FloatingViewFragment {
      */
     protected void onCreatePresentationStyleProvider() {
         PresentationStyleProvider provider = getPresentationStyleProvider();
-        provider.addStyle(new FullscreenStyle(getAppRootView(), mFullscreenStyleAttribute));
-        provider.addStyle(new DrawerStyle(getAppRootView(), mDrawerStyleAttribute));
-        //provider.addStyle("", new FullscreenStyle());
+        provider.addStyle(new FullscreenPresentationStyle(getAppRootView(), mFullscreenStyleAttribute));
+        provider.addStyle(new DrawerPresentationStyle(getAppRootView(), mDrawerStyleAttribute));
+        provider.addStyle(new SliderPresentationStyle(getAppRootView(), mSliderStyleAttribute));
     }
 
     /**
@@ -203,5 +216,9 @@ public class PresentationFragment extends FloatingViewFragment {
     @NonNull
     public void setPreferredPresentationStyle(@NonNull String style) {
         mPreferredPresentationStyle = style;
+    }
+
+    public SliderStyleAttribute getSliderStyleAttribute() {
+        return mSliderStyleAttribute;
     }
 }

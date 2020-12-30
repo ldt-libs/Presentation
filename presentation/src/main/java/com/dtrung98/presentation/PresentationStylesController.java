@@ -11,28 +11,32 @@ import java.util.Iterator;
 public class PresentationStylesController {
     PresentationStylesController(@NonNull ViewGroup appRootView) {
         mAppRootView = appRootView;
-        mAppRootView.setTag(R.id.presentation_presentation_layers_controller, this);
     }
 
     @NonNull
     public static PresentationStylesController of(@NonNull ViewGroup appRootView) {
-        Object o = appRootView.getTag(R.id.presentation_presentation_layers_controller);
-        if (!(o instanceof PresentationStylesController)) {
-            o = new PresentationStylesController(appRootView);
+        Object controller = appRootView.getTag(R.id.presentation_presentation_layers_controller);
+        if (!(controller instanceof PresentationStylesController)) {
+            controller = new PresentationStylesController(appRootView);
+            appRootView.setTag(R.id.presentation_presentation_layers_controller, controller);
         }
-        return (PresentationStylesController) o;
+        return (PresentationStylesController) controller;
     }
 
     @NonNull
     private final ViewGroup mAppRootView;
-    private ArrayDeque<PresentationLayerEntry> mEntries = new ArrayDeque<>();
+    private ArrayDeque<PresentationEntry> mEntries = new ArrayDeque<>();
     private int mPrimaryPresentationStyleId = 0;
 
-    @NonNull
-    public PresentationLayerEntry addPresentationLayer(PresentationStyle presentationStyle) {
-        PresentationLayerEntry entry = new PresentationLayerEntry(presentationStyle.getId());
+    public boolean hasPrimaryPresentation() {
+        return mPrimaryPresentationStyleId != 0;
+    }
 
-        if(mPrimaryPresentationStyleId == 0 && presentationStyle instanceof PrimaryPresentationFragment.PrimaryPresentationStyle) {
+    @NonNull
+    public PresentationEntry addPresentationEntry(PresentationStyle presentationStyle) {
+        PresentationEntry entry = new PresentationEntry(presentationStyle.getId());
+
+        if (mPrimaryPresentationStyleId == 0 && presentationStyle instanceof PrimaryPresentationFragment.PrimaryPresentationPresentationStyle) {
             // if the presentationStyle is the primary
             // put it to last
             mPrimaryPresentationStyleId = presentationStyle.getId();
@@ -44,22 +48,22 @@ public class PresentationStylesController {
     }
 
     @NonNull
-    public void removePresentationLayer(int id) {
-        PresentationLayerEntry entry = getPresentationEntry(id);
+    public void removePresentationEntry(int id) {
+        PresentationEntry entry = getPresentationEntry(id);
         if (entry != null) {
             mEntries.remove(entry);
         }
-        if(id == mPrimaryPresentationStyleId) {
+        if (id == mPrimaryPresentationStyleId) {
             mPrimaryPresentationStyleId = 0;
         }
     }
 
     public int getCurrentPresentationLayerId() {
-        PresentationLayerEntry entry = getCurrentPresentationLayerEntry();
+        PresentationEntry entry = getCurrentPresentationEntry();
         return entry != null ? entry.getId() : 0;
     }
 
-    public PresentationLayerEntry getCurrentPresentationLayerEntry() {
+    public PresentationEntry getCurrentPresentationEntry() {
         if (mEntries.isEmpty()) {
             return null;
         } else {
@@ -67,8 +71,8 @@ public class PresentationStylesController {
         }
     }
 
-    public PresentationLayerEntry getPreviousPresentationLayerEntry() {
-        Iterator<PresentationLayerEntry> iterator = mEntries.descendingIterator();
+    public PresentationEntry getPreviousPresentationEntry() {
+        Iterator<PresentationEntry> iterator = mEntries.descendingIterator();
         // throw the topmost destination away.
         if (iterator.hasNext()) {
             iterator.next();
@@ -76,11 +80,25 @@ public class PresentationStylesController {
         return iterator.hasNext() ? iterator.next() : null;
     }
 
-    public PresentationLayerEntry getPresentationEntry(int layerId) {
-        PresentationLayerEntry lastFromBackStack = null;
-        Iterator<PresentationLayerEntry> iterator = mEntries.descendingIterator();
+    private PresentationEntry getPreviousPreviousPresentationLayerEntry() {
+        Iterator<PresentationEntry> iterator = mEntries.descendingIterator();
+        // throw the topmost destination away.
+        if (iterator.hasNext()) {
+            iterator.next();
+        }
+
+        if (iterator.hasNext()) {
+            iterator.next();
+        }
+
+        return iterator.hasNext() ? iterator.next() : null;
+    }
+
+    public PresentationEntry getPresentationEntry(int layerId) {
+        PresentationEntry lastFromBackStack = null;
+        Iterator<PresentationEntry> iterator = mEntries.descendingIterator();
         while (iterator.hasNext()) {
-            PresentationLayerEntry entry = iterator.next();
+            PresentationEntry entry = iterator.next();
             int iteratorLayerId = entry.getId();
             if (iteratorLayerId == layerId) {
                 lastFromBackStack = entry;
@@ -96,18 +114,29 @@ public class PresentationStylesController {
     }
 
     /**
-     * Update the foreground fraction of a
+     * Update the presenting animation progress fraction
+     * Called by {@link PresentationStyle} which is currently running a presenting or dismissing animation
      *
-     * @param value
+     * @param value fraction value from 0 to 1
      */
-    public void updateForegroundLayerFraction(@FloatRange(from = 0.0, to = 1.0) float value) {
-        PresentationLayerEntry currentEntry = getCurrentPresentationLayerEntry();
+    public void updatePresentingFraction(@FloatRange(from = 0.0, to = 1.0) float value) {
+
+        // update presenting fraction value in current presentation entry
+        PresentationEntry currentEntry = getCurrentPresentationEntry();
         if (currentEntry != null) {
-            currentEntry.mForegroundFractionLiveData.postValue(value);
+            currentEntry.mPresentingFractionLiveData.postValue(value);
         }
-        PresentationLayerEntry prevEntry = getPreviousPresentationLayerEntry();
+
+        // update underlying fraction value in previous presentation entry
+        PresentationEntry prevEntry = getPreviousPresentationEntry();
         if (prevEntry != null) {
-            getPreviousPresentationLayerEntry().mBackgroundFractionLiveData.postValue(value);
+            getPreviousPresentationEntry().mUnderlyingFractionLiveData.postValue(value);
+        }
+
+        // update underlying underlying fraction value in 3rf presentation entry
+        PresentationEntry prevPrevEntry = getPreviousPreviousPresentationLayerEntry();
+        if (prevPrevEntry != null) {
+            getPreviousPreviousPresentationLayerEntry().mUnderlyingUnderlyingFractionLiveData.postValue(value);
         }
     }
 }

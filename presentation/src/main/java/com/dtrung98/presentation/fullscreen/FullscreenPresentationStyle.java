@@ -1,7 +1,6 @@
 package com.dtrung98.presentation.fullscreen;
 
 import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -19,16 +18,14 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.dtrung98.presentation.PresentationAttribute;
-import com.dtrung98.presentation.PresentationLayerEntry;
+import com.dtrung98.presentation.PresentationEntry;
 import com.dtrung98.presentation.PresentationStyle;
 import com.dtrung98.presentation.widget.RoundRectDrawable;
-
-import static android.os.Build.VERSION_CODES.R;
 
 /**
  * A style which always presents in a fullscreen frame.
  */
-public class FullscreenStyle extends PresentationStyle {
+public class FullscreenPresentationStyle extends PresentationStyle {
 
     @Override
     public void setContentView(View view) {
@@ -37,7 +34,7 @@ public class FullscreenStyle extends PresentationStyle {
         }
     }
 
-    public FullscreenStyle(@NonNull ViewGroup appRootView, @Nullable FullscreenStyleAttribute attribute) {
+    public FullscreenPresentationStyle(@NonNull ViewGroup appRootView, @Nullable FullscreenStyleAttribute attribute) {
         super(appRootView, attribute);
     }
 
@@ -73,7 +70,7 @@ public class FullscreenStyle extends PresentationStyle {
                 break;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction((Float) animation.getAnimatedValue()));
+            animator.setUpdateListener(animation -> findPresentationLayersController().updatePresentingFraction((Float) animation.getAnimatedValue()));
         }
         animator.start();
     }
@@ -92,8 +89,8 @@ public class FullscreenStyle extends PresentationStyle {
     @Override
     protected void initContainer() {
         super.initContainer();
-        PresentationLayerEntry entry = findPresentationLayersController().getPresentationEntry(getId());
-        entry.setFlag(PresentationLayerEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
+        PresentationEntry entry = findPresentationLayersController().getPresentationEntry(getId());
+        entry.setFlag(PresentationEntry.FLAG_REQUIRE_PREVIOUS_LAYER_SLIDE_HORIZONTAL, true);
 
         getAppRootView().setBackgroundColor(Color.BLACK);
         final View transitView = getTransitView();
@@ -118,7 +115,7 @@ public class FullscreenStyle extends PresentationStyle {
             }
         }
 
-        entry.getBackgroundFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
+        entry.getUnderlyingFractionLiveData().observe((LifecycleOwner) getAppRootView().getContext(), fraction -> {
             doBackgroundCardPresentationTransit(fraction);
            /* if (transitView != null) {
                 transitView.setTranslationX(-transitView.getWidth() / 3f * fraction);
@@ -181,7 +178,7 @@ public class FullscreenStyle extends PresentationStyle {
                 break;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            animator.setUpdateListener(animation -> findPresentationLayersController().updateForegroundLayerFraction(1 - animation.getAnimatedFraction()));
+            animator.setUpdateListener(animation -> findPresentationLayersController().updatePresentingFraction(1 - animation.getAnimatedFraction()));
         }
         animator.setListener(new SimpleAnimatorListener() {
             @Override
@@ -194,7 +191,7 @@ public class FullscreenStyle extends PresentationStyle {
 
     @NonNull
     @Override
-    public String getPresentationType() {
+    public String getName() {
         return "fullscreen";
     }
 

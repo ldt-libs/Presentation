@@ -24,7 +24,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
     protected void initContainer() {
         super.initContainer();
         PresentationStylesController controller = findPresentationLayersController();
-        controller.addPresentationLayer(this);
+        controller.addPresentationEntry(this);
     }
 
     public PresentationStyle(@NonNull ViewGroup appRootView) {
@@ -53,12 +53,12 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * Unique name used to identify the {@link PresentationStyle}
      */
     @NonNull
-    public abstract String getPresentationType();
+    public abstract String getName();
 
     @Override
     void dismissContainer() {
         super.dismissContainer();
-        findPresentationLayersController().removePresentationLayer(getId());
+        findPresentationLayersController().removePresentationEntry(getId());
     }
 
     @Override
@@ -70,7 +70,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * @param bundle bundle
      */
     public void onSavePresentationState(@NonNull Bundle bundle) {
-        bundle.putBundle(PRESENTATION_STYLE_ATTRIBUTE + getPresentationType(), mAttribute.onSaveInstanceState());
+        bundle.putBundle(PRESENTATION_STYLE_ATTRIBUTE + getName(), mAttribute.onSaveInstanceState());
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class PresentationStyle extends ContentViewContainer {
      * @param bundle bundle
      */
     public void onRestorePresentationState(@NonNull Bundle bundle) {
-        Bundle attributeBundle = bundle.getBundle(PRESENTATION_STYLE_ATTRIBUTE + getPresentationType());
+        Bundle attributeBundle = bundle.getBundle(PRESENTATION_STYLE_ATTRIBUTE + getName());
         if (attributeBundle != null) {
             mAttribute.onRestoreInstanceState(attributeBundle);
         }
